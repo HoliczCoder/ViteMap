@@ -2,9 +2,9 @@ import { PropTypes } from "prop-types";
 import isEqual from "fast-deep-equal";
 import React, { useRef } from "react";
 import { useLeafletContext } from "@react-leaflet/core";
-import 'leaflet-draw'
+import "leaflet-draw";
 import "leaflet-draw/dist/leaflet.draw-src.css";
-import leaflet, { Map, Control } from "leaflet";
+import leaflet, { Map, Control, Draw } from "leaflet";
 
 const eventHandlers = {
   onEdited: "draw:edited",
@@ -25,14 +25,27 @@ function EditControl(props) {
   const context = useLeafletContext();
   const drawRef = useRef();
   const propsRef = useRef(props);
+  const { buttonTriggerOutSide } = props;
 
   const onDrawCreate = (e) => {
-    alert("vkl")
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
     container.addLayer(e.layer);
     onCreated && onCreated(e);
   };
+
+  // watching
+  React.useEffect(() => {
+    if (buttonTriggerOutSide) {
+      //
+      const { map } = context;
+      // const draw = new Draw.Polyline(map);
+      // draw.enable();
+      // console.log(draw);
+      const draw_2 = new Draw.Marker(map);
+      draw_2.enable();
+    }
+  }, [buttonTriggerOutSide]);
 
   React.useEffect(() => {
     const { map } = context;
@@ -99,7 +112,7 @@ function createDrawElement(props, context) {
   const { draw, edit, position } = props;
   const options = {
     edit: {
-      ...edit,  
+      ...edit,
       featureGroup: layerContainer,
     },
   };
@@ -148,6 +161,7 @@ EditControl.propTypes = {
       removeLayer: PropTypes.func.isRequired,
     }),
   }),
+  buttonTriggerOutSide: PropTypes.bool,
 };
 
 export default EditControl;

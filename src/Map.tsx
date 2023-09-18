@@ -18,16 +18,20 @@ import {
 import EditControl from "./EditControl";
 import { useLeafletContext } from "@react-leaflet/core";
 import Square from "./Square";
-import "./leaflet.almostover";
+// import "./leaflet.almostover";
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
-});
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+//   iconUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+//   shadowUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+// });
+
+//
+import "leaflet-draw";
+import leaflet, { Draw, Control } from "leaflet";
 
 const locations: LatLngExpression[] = [
   [21.9361, 106.0545],
@@ -42,6 +46,8 @@ export default function Maps() {
 
   // State to store the markers
   const [markers, setMarkers] = React.useState<LatLngExpression[]>(locations);
+  // trigger to draw a polyline
+  const [isDrawPolyline, setIsDrawPolyline] = React.useState<boolean>(false);
 
   const [draggable, setDraggable] = useState<boolean>(false);
   const markerRef = useRef(null);
@@ -65,54 +71,64 @@ export default function Maps() {
     setDraggable((d) => !d);
   }, []);
 
-  return (
-    <MapContainer
-      center={center}
-      zoom={zoom}
-      scrollWheelZoom={true}
-      style={{ minHeight: "100vh", minWidth: "100vw" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-      />
-      <FeatureGroup>
-        <EditControl
-          position="topright"
-          // onEdited={handleMarkerEdited}
-          // onCreated={handleMarkerCreated}
-          // onDeleted={handleMarkerDeleted}
-          draw={{
-            rectangle: true,
-            polyline: true,
-            polygon: true,
-            circle: true,
-            marker: true,
-            circlemarker: true,
-          }}
-        />
-      </FeatureGroup>
-      {/* <Square center={center} size={100000} /> */}
+  const EventTrigger = () => {
+    setIsDrawPolyline(true);
+  };
 
-      {markers.map((marker, index) => (
-        <div key={index}>
-          <Marker
-            draggable={draggable}
-            eventHandlers={eventHandlers}
-            position={marker}
-            ref={markerRef}
-            autoPan={true}
-          >
-            <Popup minWidth={90}>
-              <span onClick={toggleDraggable}>
-                {draggable
-                  ? "Marker is draggable"
-                  : "Click here to make marker draggable"}
-              </span>
-            </Popup>
-          </Marker>
-        </div>
-      ))}
-    </MapContainer>
+  return (
+    <>
+      <div>
+        <button onClick={() => EventTrigger()}>Click here</button>
+      </div>
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        scrollWheelZoom={true}
+        style={{ minHeight: "500px", minWidth: "100vw" }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+        />
+        <FeatureGroup>
+          <EditControl
+            position="topright"
+            // onEdited={handleMarkerEdited}
+            // onCreated={handleMarkerCreated}
+            // onDeleted={handleMarkerDeleted}
+            draw={{
+              rectangle: true,
+              polyline: true,
+              polygon: true,
+              circle: true,
+              marker: true,
+              circlemarker: true,
+            }}
+            buttonTriggerOutSide={isDrawPolyline}
+          />
+        </FeatureGroup>
+        {/* <Square center={center} size={100000} /> */}
+
+        {markers.map((marker, index) => (
+          <div key={index}>
+            <Marker
+              draggable={draggable}
+              eventHandlers={eventHandlers}
+              position={marker}
+              ref={markerRef}
+              autoPan={true}
+            >
+              <Popup minWidth={90}>
+                <span onClick={toggleDraggable}>
+                  {draggable
+                    ? "Marker is draggable"
+                    : "Click here to make marker draggable"}
+                </span>
+              </Popup>
+            </Marker>
+          </div>
+        ))}
+      </MapContainer>
+    </>
   );
 }

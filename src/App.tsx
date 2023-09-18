@@ -3,9 +3,13 @@ import "./App.css";
 import Maps from "./Map";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
+import "leaflet-draw";
+import { Draw, DrawMap } from "leaflet";
+import { useLeafletContext } from "@react-leaflet/core";
 
 function App() {
   const center: LatLngExpression = [20.9361, 106.0545]; // Center the map on Vietnam
+  // const context = useLeafletContext();
 
   return (
     // <MapContainer
@@ -24,7 +28,9 @@ function App() {
     //     </Popup>
     //   </Marker>
     // </MapContainer>
-    <Maps />
+    <>
+      <Maps />
+    </>
   );
 }
 
